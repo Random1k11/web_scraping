@@ -29,6 +29,6 @@ ITEM_PIPELINES = {
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
-LOG_LEVEL = 'ERROR'
+LOG_LEVEL = 'CRITICAL'
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 CONCURRENT_REQUESTS = 16
