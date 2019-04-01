@@ -25,13 +25,9 @@ class DentalFirstSpider(scrapy.Spider):
         self.sub_menuXpath = "//ul[@class='bx_catalog_line_ul']/li/a/@href"
         self.itemsXpath = '//a[@class="bx_catalog_item_images"]/@href'
         self.TitleXpath  = "//h1[@itemprop='name']/text()"
-        self.manyTitleXpath = "//div[@class='list_list_p']/span/text()"
         self.priceXpath = "//span[@itemprop='price']/text()"
-        self.BrandXpath = "//table[@class='tabletable']"
-        self.artikulXpath = "//table[@class='tabletable']"
-        self.codelXpath = "//table[@class='tabletable']"
-        self.countryXpath = "//table[@class='tabletable']"
         self.descriptionXpath = "//div[@class='bx_item_description']/text()"
+        self.sectionsXpath = '//ol[@class="breadcrumb  box-breadcrumbs hidden-xs"]/li/a/text()'
 
 
     def parse(self, response):
@@ -77,17 +73,23 @@ class DentalFirstSpider(scrapy.Spider):
         Country = response.xpath('//body').extract_first()
         Country = self.getAtribute(Country, 'Страна')
         Description = response.xpath(self.descriptionXpath).extract_first().strip()
+        Main_section = response.xpath(self.sectionsXpath)[1].extract()
+        Sub_section = response.xpath(self.sectionsXpath)[2].extract()
+        Under_sub_section = response.xpath(self.sectionsXpath)[3].extract()
         Href = response.url
 
         item = DentalItem()
-        item['Title']        = Title
-        item['Price']        = Price
-        item['Brand']        = Brand
-        item['Artikul']      = Artikul
-        item['Code']         = Code
-        item['Country']      = Country
-        item['Description']  = Description
-        item['Href']         = Href
+        item['Title']              = Title
+        item['Price']              = Price
+        item['Brand']              = Brand
+        item['Artikul']            = Artikul
+        item['Code']               = Code
+        item['Country']            = Country
+        item['Description']        = Description
+        item['Main_section']       = Main_section
+        item['Sub_section']        = Sub_section
+        item['Under_sub_section']  = Under_sub_section
+        item['Href']               = Href
 
         print(item, response.url)
         yield item

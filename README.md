@@ -1,7 +1,6 @@
-Создайте виртуальное окружение
+Создайте виртуальное окружение командой
 
 virtualenv venv
-
 
 source venv/bin/activate
 
@@ -11,8 +10,4 @@ pip install -r requirements.txt
 
 Запустите парсер командой
 
-python run_unident.py
-
-
-
-
+python run_dental.py

@@ -36,8 +36,7 @@ class DentalSpiderPipeline(object):
         productDB.Main_section       = item["Main_section"]
         productDB.Sub_section        = item["Sub_section"]
         productDB.Under_sub_section  = item["Under_sub_section"]
-
-        productDB.Href         = item["Href"]
+        productDB.Href               = item["Href"]
 
         try:
             if check_existence_row_in_db(productDB.Href) == None:
