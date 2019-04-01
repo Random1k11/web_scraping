@@ -42,7 +42,6 @@ class DentalSpiderPipeline(object):
                 session.commit()
             else:
                 if float(productDB.Price) != float(get_price_from_database(productDB.Href)):
-                    print(float(productDB.Price), float(get_price_from_database(productDB.Href)))
                     logger.info('=== Цена товара изменилась ===')
                     try:
                         insert_row_to_history_database(productDB.Href)
