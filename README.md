@@ -11,3 +11,10 @@ pip install -r requirements.txt
 Запустите парсер командой
 
 python run_dental.py
+
+
+Либо запустите в Docker
+
+docker build -t dental .
+
+docker run -it --entrypoint=/bin/sh dental

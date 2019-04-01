@@ -59,7 +59,11 @@ class DentalFirstSpider(scrapy.Spider):
         try:
             Price = response.xpath(self.priceXpath).extract_first().strip()
         except AttributeError:
-            print('Новый запрос')
+            yield scrapy.Request(response.url, callback=self.parse_items)
+
+        try:
+            Price = response.xpath(self.priceXpath).extract_first().strip()
+        except AttributeError:
             yield scrapy.Request(response.url, callback=self.parse_items)
 
         Title = response.xpath(self.TitleXpath).extract_first()
@@ -91,7 +95,7 @@ class DentalFirstSpider(scrapy.Spider):
         item['Under_sub_section']  = Under_sub_section
         item['Href']               = Href
 
-        print(item, response.url)
+        # print(item, response.url)
         yield item
 
 

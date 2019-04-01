@@ -11,10 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.CRITICAL)
 formatter = logging.Formatter('[%(asctime)s, level: %(levelname)s, file: %(name)s, function: %(funcName)s], message: %(message)s')
-file_handler = logging.FileHandler('dental/logs/models.log', mode='w')
-file_handler.setFormatter(formatter)
-file_handler.setLevel(logging.ERROR)
-logger.addHandler(file_handler)
+
 
 Base = declarative_base()
 
@@ -35,9 +32,9 @@ def check_existence_row_in_db(Href):
     return session.query(Product).filter(Product.Href == Href).scalar()
 
 
-def get_price_from_databse(Href):
+def get_price_from_database(Href):
     try:
-        p = session.query(Product).filter(Product.Href == CodeProduct).first()
+        p = session.query(Product).filter(Product.Href == Href).first()
         return p.Price
     except:
         logger.exception('Ошибка при получении информации о цене товара: ' + str(Href))
@@ -45,7 +42,7 @@ def get_price_from_databse(Href):
 
 def insert_row_to_history_database(Href):
     try:
-        session.execute('INSERT INTO History_Product (SELECT * FROM Product WHERE href="' + Href + '");')
+        session.execute('INSERT INTO History_Product (SELECT * FROM Product WHERE Href="' + Href + '");')
         session.commit()
     except:
         logger.exception('Ошибка при записи товара в историческую БД: ' + str(Href))
@@ -92,6 +89,9 @@ class HistoryProduct(Base):
     Code = Column(String(100))
     Country = Column(String(100))
     Description = Column(Text)
+    Main_section = Column(String(100))
+    Sub_section = Column(String(100))
+    Under_sub_section = Column(String(100))
     Href = Column(Text)
     created_date = Column(DateTime, default=datetime.datetime.now)
 

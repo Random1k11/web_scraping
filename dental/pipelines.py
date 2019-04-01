@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from dental.models import db_connect, create_table, Product, HistoryProduct, check_existence_row_in_db,\
-                                get_price_from_databse, insert_row_to_history_database, update_price
+                                get_price_from_database, insert_row_to_history_database, update_price
 from sqlalchemy.exc import IntegrityError
 
 import logging
@@ -8,10 +8,7 @@ import logging
 logger = logging.getLogger('pipeline')
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('[%(asctime)s, level: %(levelname)s, file: %(name)s, function: %(funcName)s], message: %(message)s')
-file_handler = logging.FileHandler('dental/logs/pipeline.log', mode='w')
-file_handler.setFormatter(formatter)
-file_handler.setLevel(logging.ERROR)
-logger.addHandler(file_handler)
+
 
 
 class DentalSpiderPipeline(object):
@@ -44,7 +41,8 @@ class DentalSpiderPipeline(object):
                 session.add(productDB)
                 session.commit()
             else:
-                if int(productDB.Price) != int(get_price_from_databse(productDB.Href)):
+                if float(productDB.Price) != float(get_price_from_database(productDB.Href)):
+                    print(float(productDB.Price), float(get_price_from_database(productDB.Href)))
                     logger.info('=== Цена товара изменилась ===')
                     try:
                         insert_row_to_history_database(productDB.Href)
