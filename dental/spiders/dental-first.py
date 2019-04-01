@@ -2,6 +2,12 @@ import scrapy
 from dental.items import DentalItem
 from bs4 import BeautifulSoup
 import re
+import os, sys, inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+parentdir = os.path.dirname(parentdir)
+sys.path.insert(0, parentdir)
+from config import Config
 
 
 class DentalFirstSpider(scrapy.Spider):
@@ -19,13 +25,9 @@ class DentalFirstSpider(scrapy.Spider):
         self.sub_menuXpath = "//ul[@class='bx_catalog_line_ul']/li/a/@href"
         self.itemsXpath = '//a[@class="bx_catalog_item_images"]/@href'
         self.TitleXpath  = "//h1[@itemprop='name']/text()"
-        self.manyTitleXpath = "//div[@class='list_list_p']/span/text()"
         self.priceXpath = "//span[@itemprop='price']/text()"
-        self.BrandXpath = "//table[@class='tabletable']"
-        self.artikulXpath = "//table[@class='tabletable']"
-        self.codelXpath = "//table[@class='tabletable']"
-        self.countryXpath = "//table[@class='tabletable']"
         self.descriptionXpath = "//div[@class='bx_item_description']/text()"
+        self.sectionsXpath = '//ol[@class="breadcrumb  box-breadcrumbs hidden-xs"]/li/a/text()'
 
 
     def parse(self, response):
@@ -49,7 +51,6 @@ class DentalFirstSpider(scrapy.Spider):
     def parse_items(self, response):
         for url in response.xpath(self.itemsXpath):
             url = 'https://dental-first.ru' + url.extract()
-            # print(url)
             yield scrapy.Request(url, callback=self.get_info_about_items)
 
 
@@ -63,34 +64,42 @@ class DentalFirstSpider(scrapy.Spider):
 
         Title = response.xpath(self.TitleXpath).extract_first()
         Price = response.xpath(self.priceXpath).extract_first().strip()
-        Brand = response.xpath(self.BrandXpath).extract()
+        Brand = response.xpath('//body').extract_first()
         Brand = self.getAtribute(Brand, 'Производитель')
-        Artikul = response.xpath(self.artikulXpath).extract()
+        Artikul = response.xpath('//body').extract_first()
         Artikul = self.getAtribute(Artikul, 'Артикул')
-        Code = response.xpath(self.codelXpath).extract()
+        Code = response.xpath('//body').extract_first()
         Code = self.getAtribute(Code, 'Код товара')
-        Country = response.xpath(self.countryXpath).extract()
+        Country = response.xpath('//body').extract_first()
         Country = self.getAtribute(Country, 'Страна')
         Description = response.xpath(self.descriptionXpath).extract_first().strip()
+        Main_section = response.xpath(self.sectionsXpath)[1].extract()
+        Sub_section = response.xpath(self.sectionsXpath)[2].extract()
+        Under_sub_section = response.xpath(self.sectionsXpath)[3].extract()
+        Href = response.url
 
         item = DentalItem()
-        item['Title']        = Title
-        item['Price']        = Price
-        item['Brand']        = Brand
-        item['Artikul']      = Artikul
-        item['Code']         = Code
-        item['Country']      = Country
-        item['Description']  = Description
+        item['Title']              = Title
+        item['Price']              = Price
+        item['Brand']              = Brand
+        item['Artikul']            = Artikul
+        item['Code']               = Code
+        item['Country']            = Country
+        item['Description']        = Description
+        item['Main_section']       = Main_section
+        item['Sub_section']        = Sub_section
+        item['Under_sub_section']  = Under_sub_section
+        item['Href']               = Href
 
         print(item, response.url)
         yield item
 
 
     def getAtribute(self, html, atribute):
-        soup = BeautifulSoup(html[0], 'lxml')
+        soup = BeautifulSoup(html, 'lxml')
         Atribute = soup.find('td', text = re.compile(atribute))
         try:
-            Atribute = Brand.parent.findAll('td')[1].text
-        except:
-            Atribute = atribute + ': нет'
+            Atribute = Atribute.parent.findAll('td')[1].text
+        except AttributeError:
+            Atribute = 'не указан'
         return Atribute

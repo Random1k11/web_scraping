@@ -1,19 +1,29 @@
 # -*- coding: utf-8 -*-
-
-# Scrapy settings for dental project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://doc.scrapy.org/en/latest/topics/settings.html
-#     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
+import os, sys, inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+from config import Config
 
 BOT_NAME = 'dental'
 
 SPIDER_MODULES = ['dental.spiders']
 NEWSPIDER_MODULE = 'dental.spiders'
 
+
+CONNECTION_STRING = "{drivername}://{user}:{passwd}@{host}:{port}/{db_name}?charset=utf8".format(
+    drivername="mysql",
+    user=Config.user,
+    passwd=Config.passwd,
+    host=Config.host,
+    port=Config.port,
+    db_name=Config.database,
+)
+
+
+ITEM_PIPELINES = {
+    'dental.pipelines.DentalSpiderPipeline': 300,
+}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'dental (+http://www.yourdomain.com)'
@@ -23,7 +33,7 @@ ROBOTSTXT_OBEY = True
 
 LOG_LEVEL = 'ERROR'
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 16
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
